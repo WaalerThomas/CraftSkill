@@ -17,7 +17,7 @@ void print_other(const char *message, ...)
 Game game_new()
 {
     Game g;
-    g.player = player_new(10);
+    g.player = player_alloc(10);
     g.userInput = userinput_alloc();
     g.eventHandler = eventhandler_alloc();
 

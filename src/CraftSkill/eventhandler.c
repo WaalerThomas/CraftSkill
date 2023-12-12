@@ -11,7 +11,7 @@ EventHandler eventhandler_alloc()
     EventHandler handler;
     handler.hashLength = 1009;
     handler.itemCount = 0;
-    handler.items = malloc(sizeof(HashLinkedItem) * handler.hashLength);
+    handler.items = calloc(handler.hashLength, sizeof(HashLinkedItem));
     return handler;
 }
 

@@ -28,7 +28,7 @@ Container container_alloc(char *name, size_t capacity)
         c.capacity = capacity;
 
     c.count = 0;
-    c.items = malloc(sizeof(c.items) * c.capacity);
+    c.items = calloc(c.capacity, sizeof(Item));
 
     return c;
 }

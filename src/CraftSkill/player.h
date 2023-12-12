@@ -12,7 +12,7 @@ typedef struct {
     Equipped equipped;
 } Player;
 
-Player player_new(uint16_t max_health);
+Player player_alloc(uint16_t max_health);
 void player_cleanup(Player *p);
 void player_equip(Player *p, Container *c, const char *item_name);
 void print_player_stats(Player *p);

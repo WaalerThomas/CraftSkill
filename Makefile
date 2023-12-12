@@ -3,7 +3,7 @@ TARGET		= libcraftskill.a
 SRC			= $(wildcard src/CraftSkill/*.c)
 OBJ			= $(SRC:.c=.o)
 
-INCLUDES	= -I../src
+INCLUDES	= -I./src
 
 LIB			=
 
@@ -19,7 +19,7 @@ CFLAGS		= -Wall -Wextra -Werror -pedantic -g
 all: $(TARGET) craftskill clean
 
 craftskill: $(OBJ)
-	$(CC) $(CFLAGS) $(INCLUDES) -L. -lcraftskill src/craftskill.c -o craftskill
+	$(CC) $(CFLAGS) -o craftskill src/craftskill.c $(INCLUDES) -L. -lcraftskill
 
 $(TARGET): $(OBJ)
 	ar rcs $(TARGET) $(OBJ)

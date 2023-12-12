@@ -4,12 +4,12 @@ UserInput userinput_alloc()
 {
     UserInput ui;
     ui.buffer_size = 150;
-    ui.buffer = (char *)malloc(sizeof(char) * ui.buffer_size);
+    ui.buffer = malloc(sizeof(char) * ui.buffer_size);
     ui.pch = NULL;
 
     ui.token_max = 25;
     ui.token_count = 0;
-    ui.tokens = (char**)malloc(sizeof(char*) * ui.token_max);
+    ui.tokens = malloc(sizeof(char*) * ui.token_max);
     return ui;
 }
 
@@ -22,7 +22,8 @@ void userinput_cleanup(UserInput *ui)
 void userinput_read(UserInput *ui)
 {
     printf("> ");
-    getline(&ui->buffer, &ui->buffer_size, stdin);
+    /* getline(&ui->buffer, &ui->buffer_size, stdin); */
+    fgets(ui->buffer, ui->buffer_size, stdin);
     ui->buffer[strcspn(ui->buffer, "\n")] = 0;
 
     ui->token_count = 0;

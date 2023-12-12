@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-Player player_new(uint16_t max_health)
+Player player_alloc(uint16_t max_health)
 {
     Player p;
     p.max_health = (max_health == 0) ? 1 : max_health;
