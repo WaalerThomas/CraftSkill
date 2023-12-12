@@ -1,0 +1,15 @@
+.DS_Store
+.idea
+*.log
+tmp/
+.ccls-cache/
+craftskill.dSYM/
+vendors/cunit/*
+
+craftskill
+!src/CraftSkill
+libcraftskill.a
+tests/test-*
+!tests/test-*.*
+tests/test-*-Results*
+

@@ -1,0 +1,6 @@
+#+title: Project
+
+* Things I want to try to implement in this project
+- ECS, entity component system
+  Mostly just for fun XD
+-
