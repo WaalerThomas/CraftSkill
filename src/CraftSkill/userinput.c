@@ -22,7 +22,6 @@ void userinput_cleanup(UserInput *ui)
 void userinput_read(UserInput *ui)
 {
     printf("> ");
-    /* getline(&ui->buffer, &ui->buffer_size, stdin); */
     fgets(ui->buffer, ui->buffer_size, stdin);
     ui->buffer[strcspn(ui->buffer, "\n")] = 0;
 

@@ -2,6 +2,9 @@
 
 #include <string.h>
 
+// Forward decleration
+void command_info(Game *g);
+
 void print_something(const char *message, va_list args)
 {
     (void) message;
@@ -48,7 +51,18 @@ void parse_commands(Game *g)
     else if (strcmp(command, "test") == 0) {
         event_emit(&g->eventHandler, "test_event", NULL);
     }
+    else if (strcmp(command, "help") == 0) {
+        event_emit(&g->eventHandler, "event_print", "NOT IMPLEMENTED!");
+    }
+    else if (strcmp(command, "info") == 0) {
+        command_info(g);
+    }
     else {
         event_emit(&g->eventHandler, "event_print", "Unknown command '%s'", command);
     }
+}
+
+void command_info(Game *g)
+{
+    event_emit(&g->eventHandler, "event_print", "Inside command_info, %d", g->userInput.token_count);
 }
