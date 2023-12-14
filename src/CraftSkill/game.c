@@ -26,8 +26,6 @@ Game game_new()
     event_subscribe(&g.eventHandler, "test_event", print_something);
     event_subscribe(&g.eventHandler, "test_event", print_other);
 
-    event_subscribe(&g.eventHandler, "event_print", print_other);
-
     g.isRunning = true;
     return g;
 }
@@ -49,7 +47,6 @@ void parse_commands(Game *g)
     }
     else if (strcmp(command, "test") == 0) {
         event_emit(&g->eventHandler, "test_event", NULL);
-        event_emit(&g->eventHandler, "event_print", "This is some printing message argument thing");
     }
     else {
         event_emit(&g->eventHandler, "event_print", "Unknown command '%s'", command);

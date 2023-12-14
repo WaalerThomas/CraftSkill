@@ -10,8 +10,6 @@
 
 void print_message(const char *message, va_list args)
 {
-    /* char *msg = va_arg(args, char*); */
-    /* printf("%s\n", message); */
     vprintf(message, args);
     printf("\n");
 }
