@@ -2,8 +2,9 @@
 #define EVENTHANDLER_H_
 
 #include <stdint.h>
+#include <stdarg.h>
 
-typedef void(*event_callback)(const char *, ...);
+typedef void(*event_callback)(const char *, va_list);
 typedef struct HashLinkedItem HashLinkedItem;
 
 struct HashLinkedItem {

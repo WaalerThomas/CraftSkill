@@ -8,16 +8,12 @@
 #include "CraftSkill/container.h"
 #include "CraftSkill/userinput.h"
 
-void print_message(const char *message, ...)
+void print_message(const char *message, va_list args)
 {
-    va_list args;
-    va_start(args, message);
-
-    char *msg = va_arg(args, char*);
-    printf("%s\n", message);
-    vprintf(msg, args);
-
-    va_end(args);
+    /* char *msg = va_arg(args, char*); */
+    /* printf("%s\n", message); */
+    vprintf(message, args);
+    printf("\n");
 }
 
 int main(void)

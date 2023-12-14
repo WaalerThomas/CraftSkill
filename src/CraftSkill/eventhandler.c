@@ -17,6 +17,31 @@ EventHandler eventhandler_alloc()
 
 void eventhandler_cleanup(EventHandler *handler)
 {
+    // Go through all the items and free linked items
+    for (size_t i = 0; i < handler->hashLength; i++) {
+        if (handler->items[i].item == NULL) continue;
+
+        HashLinkedItem *prevItem = NULL;
+        HashLinkedItem *currentItem = &handler->items[i];
+
+        while (currentItem->item != NULL) {
+            // Traverse to the last item in the linked list
+            if (currentItem->next != NULL) {
+                prevItem = currentItem;
+                currentItem = currentItem->next;
+                continue;
+            }
+
+            // Need to check that we don't try to free the first item in the linked list
+            if (currentItem->prev == NULL) break;
+
+            free(currentItem);
+            prevItem->next = NULL;
+
+            currentItem = prevItem;
+            prevItem = currentItem->prev;
+        }
+    }
     free(handler->items);
 }
 
@@ -28,8 +53,9 @@ void event_subscribe(EventHandler *handler, const char *name, event_callback cal
 
     while (currentItem->item != NULL) {
         if (currentItem->next == NULL) {
-            HashLinkedItem linkedItem = {0};
-            currentItem->next = &linkedItem;
+            /* HashLinkedItem linkedItem = {0}; */
+            HashLinkedItem *linkedItem = calloc(1, sizeof(HashLinkedItem));
+            currentItem->next = linkedItem;
         }
         prevItem = currentItem;
         currentItem = currentItem->next;
@@ -71,8 +97,8 @@ void event_emit(EventHandler *handler, const char *name, const char *message, ..
     va_start(args, message);
 
     while (currentItem->item != NULL) {
-        char *msg = va_arg(args, char *);
-        currentItem->item(msg, args);
+        /* char *msg = va_arg(args, char *); */
+        currentItem->item(message, args);
 
         if (currentItem->next == NULL) break;
         currentItem = currentItem->next;
