@@ -1,4 +1,5 @@
 #include "player.h"
+#include "container.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -17,6 +18,7 @@ Player player_alloc(uint16_t max_health)
 void player_cleanup(Player *p)
 {
     container_cleanup(&p->inventory);
+    equipped_cleanup(&p->equipped);
 }
 
 void player_equip(Player *p, Container *c, const char *item_name)
@@ -32,7 +34,14 @@ void player_equip(Player *p, Container *c, const char *item_name)
     Item *item = &c->items[item_index];
     Item *equip_slot = equipped_get_slot(&p->equipped, item->type);
     if (equip_slot == NULL) {
-        fprintf(stderr, "ERROR: Didn't find an equipment slot for item type %d\n", item->type);
+        fprintf(stderr, "ERROR: Didn't find an equipment slot for item %s type %d\n", item_name, item->type);
+        return;
+    }
+
+    // Check whether the slot is empty or not
+    // TODO: Switch the items instead of failing
+    if (equip_slot->count > 0) {
+        fprintf(stderr, "ERROR: Could not equip %s, slot is not empty\n", item_name);
         return;
     }
 
@@ -54,4 +63,10 @@ void print_player_stats(Player *p)
     printf("Mainhand: %s\nOffhand: %s\n", main_name, off_name);
     print_container(&p->inventory);
     printf("========================\n");
+}
+
+void print_player_skills(Player *p)
+{
+    (void) p;
+    printf("NOT IMPLEMENTED printing skills\n");
 }

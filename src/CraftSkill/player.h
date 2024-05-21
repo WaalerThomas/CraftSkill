@@ -16,5 +16,6 @@ Player player_alloc(uint16_t max_health);
 void player_cleanup(Player *p);
 void player_equip(Player *p, Container *c, const char *item_name);
 void print_player_stats(Player *p);
+void print_player_skills(Player *p);
 
 #endif // PLAYER_H_

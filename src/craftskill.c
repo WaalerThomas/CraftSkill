@@ -21,18 +21,22 @@ int main(void)
     event_subscribe(&game.eventHandler, "event_print", print_message);
 
     // Create some random items and add them to the inventory
-    Item axe = item_new("Axe", ITEM_TYPE_WEAPON, 1);
-    Item stick = item_new("Stick", ITEM_TYPE_DEFAULT, 5);
-    stick.count = 3;
-    Item ball = item_new("Ball", ITEM_TYPE_DEFAULT, 1);
-    container_add(&game.player.inventory, &axe);
-    container_add(&game.player.inventory, &stick);
-    container_add(&game.player.inventory, &ball);
+    {
+        Item stick = item_new("Stick", 5);
+        stick.count = 3;
+        Item ball = item_new("Ball", 1);
+        Item axe = item_new_weapon("Axe");
+        Item sword = item_new_weapon("Sword");
+        container_add(&game.player.inventory, &axe);
+        container_add(&game.player.inventory, &stick);
+        container_add(&game.player.inventory, &ball);
+        container_add(&game.player.inventory, &sword);
+    }
 
     print_player_stats(&game.player);
     print_container_content(&game.player.inventory);
 
-    player_equip(&game.player, &game.player.inventory, "Axe");
+    // TODO: Implement command to remove items from a container
     container_remove(&game.player.inventory, "Stick", 2);
     print_player_stats(&game.player);
     print_container_content(&game.player.inventory);

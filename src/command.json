@@ -1,0 +1,12 @@
+[
+    {
+        "name": "container",
+        "subcommands": [
+            {}
+        ]
+    },
+    {
+        "name": "test",
+        "subcommands": []
+    }
+]

@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#define MAX_CONTAINER_CAPACITY 10000
+
 typedef enum {
     ITEM_TYPE_DEFAULT = 0,
     ITEM_TYPE_WEAPON,
@@ -20,13 +22,24 @@ typedef enum {
 } ItemType;
 
 typedef struct {
+    int8_t stab;
+} ItemDataWeapon;
+
+typedef union {
+    ItemDataWeapon *weapon_data;
+} ItemData;
+
+typedef struct {
+    ItemType type;
+    ItemData item_data;
+
     char *name;
     size_t count;
     size_t max_amount;
-    ItemType type;
 } Item;
 
-Item item_new(char *name, ItemType item_type, size_t max_amount);
+Item item_new(char *name, size_t max_amount);
+Item item_new_weapon(char *name);
 
 typedef struct {
     char *name;
@@ -57,6 +70,7 @@ typedef struct {
     Item finger;
 } Equipped;
 
+void equipped_cleanup(Equipped *e);
 Item* equipped_get_slot(Equipped *e, ItemType item_type);
 
 #endif // CONTAINER_H_

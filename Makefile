@@ -8,7 +8,7 @@ INCLUDES	= -I./src
 LIB			=
 
 CC			= gcc -std=c17
-CFLAGS		= -Wall -Wextra -Werror -pedantic -g
+CFLAGS		= -Wall -Wextra -pedantic -g
 
 .SUFFIXES: .c
 
