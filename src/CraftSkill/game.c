@@ -1,5 +1,7 @@
 #include "game.h"
+#include "activities.h"
 #include "container.h"
+#include "item.h"
 #include "player.h"
 
 #include <stdbool.h>
@@ -7,9 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 
 // Forward decleration
 void command_info(Game *g);
+void command_container(Game *g);
+void command_player(Game *g);
+void command_mine(Game *g);
 
 void print_something(const char *message, va_list args)
 {
@@ -46,6 +52,44 @@ void game_cleanup(Game *game)
     eventhandler_cleanup(&game->eventHandler);
 }
 
+
+void parse_commands(Game *g)
+{
+    // Why not make a switch?
+    char *command = g->userInput.tokens[0];
+
+    if (strcmp(command, "quit") == 0 || strcmp(command, "exit") == 0) {
+        event_emit(&g->eventHandler, "event_print", "Exiting the game");
+        g->isRunning = false;
+    }
+    else if (strcmp(command, "test") == 0) {
+        event_emit(&g->eventHandler, "test_event", NULL);
+    }
+    else if (strcmp(command, "help") == 0) {
+        event_emit(&g->eventHandler, "event_print", "NOT IMPLEMENTED!");
+    }
+    else if (strcmp(command, "info") == 0) {
+        command_info(g);
+    }
+    else if (strcmp(command, "container") == 0) {
+        command_container(g);
+    }
+    else if (strcmp(command, "player") == 0) {
+        command_player(g);
+    }
+    else if (strcmp(command, "mine") == 0) {
+        command_mine(g);
+    }
+    else {
+        event_emit(&g->eventHandler, "event_print", "Unknown command '%s'", command);
+    }
+}
+
+void command_info(Game *g)
+{
+    event_emit(&g->eventHandler, "event_print", "Inside command_info, %d", g->userInput.token_count);
+}
+
 void command_container(Game *g)
 {
     // Check the next tokens for accepted verbs
@@ -70,7 +114,7 @@ void command_container(Game *g)
     }
 }
 
-static void command_player_print()
+void command_player_print()
 {
     // TODO: Print the available commands for player
     printf("NOT IMPLEMENTED printing the available commands for player!\n");
@@ -115,47 +159,41 @@ void command_player(Game *g)
             return;
         }
 
-        // TODO: Be able to equip from slot number
         // TODO: Give feadback from equipping the item
         char *itemName = g->userInput.tokens[2];
-        sc = g->userInput.tokens[3];
-        player_equip(&g->player, &g->player.inventory, itemName);
+        if (isdigit(itemName[0])) {
+            int slot = atoi(itemName);
+            player_equip(&g->player, &g->player.inventory, slot - 1);
+        } else {
+            player_equip_name(&g->player, &g->player.inventory, itemName);
+        }
         return;
     }
 
     command_player_print();
 }
 
-void parse_commands(Game *g)
+void command_mine(Game *g)
 {
-    // Why not make a switch?
-    char *command = g->userInput.tokens[0];
+    if (g->userInput.token_count == 1) {
+        printf("TODO: Print the available commands\n");
+        return;
+    }
 
-    if (strcmp(command, "quit") == 0 || strcmp(command, "exit") == 0) {
-        event_emit(&g->eventHandler, "event_print", "Exiting the game");
-        g->isRunning = false;
-    }
-    else if (strcmp(command, "test") == 0) {
-        event_emit(&g->eventHandler, "test_event", NULL);
-    }
-    else if (strcmp(command, "help") == 0) {
-        event_emit(&g->eventHandler, "event_print", "NOT IMPLEMENTED!");
-    }
-    else if (strcmp(command, "info") == 0) {
-        command_info(g);
-    }
-    else if (strcmp(command, "container") == 0) {
-        command_container(g);
-    }
-    else if (strcmp(command, "player") == 0) {
-        command_player(g);
-    }
-    else {
-        event_emit(&g->eventHandler, "event_print", "Unknown command '%s'", command);
-    }
-}
+    Mineable test = {
+        .name = "Copper Rock",
+        .level_required = 1
+    };
 
-void command_info(Game *g)
-{
-    event_emit(&g->eventHandler, "event_print", "Inside command_info, %d", g->userInput.token_count);
+    ActivityResult result = activity_mine(&g->player, test);
+    if (result.code == ACTIVITY_FAILED_LOW_LEVEL) {
+        printf("Mining Level %d is required to mine %s\n", test.level_required, test.name);
+    } else if (result.code == ACTIVITY_FAILED_NO_PICKAXE) {
+        printf("You need a pickaxe to mine\n");
+    } else if (result.code == ACTIVITY_FAILED) {
+        printf("Failed to mine %s\n", test.name);
+    } else if (result.code == ACTIVITY_OK) {
+        // TODO: Return the items mined
+        printf("Mined something");
+    }
 }
