@@ -4,6 +4,7 @@
 #include <stdarg.h>
 
 #include "CraftSkill/game.h"
+#include "CraftSkill/item.h"
 #include "CraftSkill/player.h"
 #include "CraftSkill/container.h"
 #include "CraftSkill/userinput.h"
@@ -27,9 +28,11 @@ int main(void)
         Item ball = item_new("Ball", 1);
         Item axe = item_new_weapon("Axe");
         Item sword = item_new_weapon("Sword");
+        Item bPickaxe = item_new_pickaxe("Bronze Pickaxe", PICKAXE_TYPE_BRONZE);
         container_add(&game.player.inventory, &axe);
         container_add(&game.player.inventory, &stick);
         container_add(&game.player.inventory, &ball);
+        container_add(&game.player.inventory, &bPickaxe);
         container_add(&game.player.inventory, &sword);
     }
 

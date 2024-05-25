@@ -1,65 +1,9 @@
 #include "container.h"
+#include "item.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-
-Item item_new(char *name, size_t max_amount)
-{
-    Item i = {0};
-    i.name = name;
-    i.count = 1;
-    i.max_amount = (max_amount == 0) ? 1 : max_amount;
-    i.type = ITEM_TYPE_DEFAULT;
-
-    return i;
-}
-
-Item item_new_weapon(char *name)
-{
-    Item i = {0};
-    i.name = name;
-    i.count = 1;
-    i.max_amount = 1;
-    i.type = ITEM_TYPE_WEAPON;
-
-    i.item_data = (ItemData){0};
-    i.item_data.weapon_data = malloc(sizeof(ItemDataWeapon));
-    i.item_data.weapon_data->stab = 32;
-
-    return i;
-}
-
-static void item_cleanup(Item *i)
-{
-    switch (i->type) {
-        case ITEM_TYPE_DEFAULT:
-            break;
-        case ITEM_TYPE_WEAPON:
-            free(i->item_data.weapon_data);
-            break;
-        case ITEM_TYPE_TOOL:
-            break;
-        case ITEM_TYPE_HELMET:
-            break;
-        case ITEM_TYPE_TORSO:
-            break;
-        case ITEM_TYPE_LEGGINGS:
-            break;
-        case ITEM_TYPE_SHOES:
-            break;
-        case ITEM_TYPE_GLOVES:
-            break;
-        case ITEM_TYPE_RING:
-            break;
-        case ITEM_TYPE_NECKLASE:
-            break;
-        case ITEM_TYPE_CAPE:
-            break;
-        default:
-            break;
-    }
-}
 
 Container container_alloc(char *name, size_t capacity)
 {
@@ -91,6 +35,7 @@ void container_cleanup(Container *c)
         }
 
        item_cleanup(&c->items[i]);
+       foundSlots += 1;
     }
     free(c->items);
 }
@@ -181,7 +126,7 @@ int32_t container_get_item_index(Container *c, const char *name)
 {
     int32_t item_index = -1;
     uint16_t foundSlots = 0;
-    for (size_t i = 0; i < c->count; i++) {
+    for (size_t i = 0; i < c->capacity; i++) {
         if (foundSlots == c->count) {
             break;
         }
@@ -193,9 +138,20 @@ int32_t container_get_item_index(Container *c, const char *name)
             item_index = i;
             break;
         }
+       foundSlots += 1;
     }
 
     return item_index;
+}
+
+char* container_get_item_name(Container *c, uint16_t index)
+{
+    // TODO: Check for out of bounds
+    Item *i = &c->items[index];
+    if (i->count > 0) {
+        return i->name;
+    }
+    return NULL;
 }
 
 void print_container(Container *c)
@@ -205,9 +161,9 @@ void print_container(Container *c)
 
 void print_container_content(Container *c)
 {
-    printf("---------------------------------------------------\n");
+    printf("-------------------------------------------------------\n");
     printf("Container - '%s':\n", c->name);
-    printf("Slotnr.     Item name          Amount     Type\n");
+    printf("Slotnr.     Item name                Amount     Type\n");
     uint16_t foundSlots = 0;
     for (size_t i = 0; i < c->capacity; i++) {
         if (foundSlots == c->count) {
@@ -217,19 +173,12 @@ void print_container_content(Container *c)
             continue;
         }
 
-        char *type_str;
-        ItemType type = c->items[i].type;
-        switch (type) {
-            case ITEM_TYPE_DEFAULT: type_str = "Default"; break;
-            case ITEM_TYPE_WEAPON: type_str = "Weapon"; break;
-            case ITEM_TYPE_TOOL: type_str = "Tool"; break;
-            default: type_str = "Not Reachable";
-        }
+        char *type_str = item_type(&c->items[i]);
 
-        printf("%-11zu %-18s %-10zu %s\n", (i + 1), c->items[i].name, c->items[i].count, type_str);
+        printf("%-11zu %-24s %-10zu %s\n", (i + 1), c->items[i].name, c->items[i].count, type_str);
         foundSlots += 1;
     }
-    printf("---------------------------------------------------\n");
+    printf("-------------------------------------------------------\n");
 }
 
 void equipped_cleanup(Equipped *e)
@@ -262,7 +211,7 @@ Item* equipped_get_slot(Equipped *e, ItemType item_type)
         return NULL;
     }
 
-    if (item_type == ITEM_TYPE_TOOL || item_type == ITEM_TYPE_WEAPON) {
+    if (item_type == ITEM_TYPE_TOOL || item_type == ITEM_TYPE_WEAPON || item_type == ITEM_TYPE_PICKAXE) {
         return &e->mainhand;
     }
 

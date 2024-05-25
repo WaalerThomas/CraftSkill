@@ -1,5 +1,5 @@
 CC			= gcc
-CFLAGS		= -mmacosx-version-min=12.6
+CFLAGS		=
 INCLUDES 	= -I../src -I../vendors/cunit/CUnit
 LDFLAGS		= -L../
 

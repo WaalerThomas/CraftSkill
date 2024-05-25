@@ -1,5 +1,6 @@
 #include "player.h"
 #include "container.h"
+#include "item.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -12,6 +13,14 @@ Player player_alloc(uint16_t max_health)
     p.inventory = container_alloc("Inventory", 28);
     p.equipped = (Equipped){0};
 
+    p.skills = (Skills){
+        .mining = (Skill){
+            .name = "Mining",
+            .level = 1,
+            .current_xp = 0
+        }
+    };
+
     return p;
 }
 
@@ -21,22 +30,19 @@ void player_cleanup(Player *p)
     equipped_cleanup(&p->equipped);
 }
 
-void player_equip(Player *p, Container *c, const char *item_name)
+void player_equip(Player *p, Container *c, int32_t item_index)
 {
-    // Find the index of the item in the container
-    int32_t item_index = container_get_item_index(c, item_name);
-    if (item_index == -1) {
-        fprintf(stderr, "ERROR: Could not find the item %s in the container %s\n", item_name, c->name);
-        return;
-    }
+    char *item_name = container_get_item_name(c, item_index);
 
     // Figure out which equipment slot to put the item
     Item *item = &c->items[item_index];
     Item *equip_slot = equipped_get_slot(&p->equipped, item->type);
     if (equip_slot == NULL) {
-        fprintf(stderr, "ERROR: Didn't find an equipment slot for item %s type %d\n", item_name, item->type);
+        fprintf(stderr, "ERROR: Didn't find an equipment slot for item %s type %s\n", item_name, item_type(item));
         return;
     }
+
+    // TODO: Check for correct level to be allowed to equip item
 
     // Check whether the slot is empty or not
     // TODO: Switch the items instead of failing
@@ -48,6 +54,18 @@ void player_equip(Player *p, Container *c, const char *item_name)
     // Move the item info into the equipment slot
     *equip_slot = *item;
     container_remove(c, item_name, 1);
+}
+
+void player_equip_name(Player *p, Container *c, const char *item_name)
+{
+    // Find the index of the item in the container
+    int32_t item_index = container_get_item_index(c, item_name);
+    if (item_index == -1) {
+        fprintf(stderr, "ERROR: Could not find the item %s in the container %s\n", item_name, c->name);
+        return;
+    }
+
+    player_equip(p, c, item_index);
 }
 
 void print_player_stats(Player *p)
